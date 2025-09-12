@@ -5,8 +5,8 @@
 //  Created by Bas Hogeveen on 12/09/2025.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct RickAndMortyAssignmentApp: App {

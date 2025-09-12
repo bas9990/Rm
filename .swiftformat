@@ -1,0 +1,11 @@
+--swiftversion 5.10
+--indent 4
+--maxwidth 120
+--wraparguments before-first
+--wrapcollections before-first
+--stripunusedargs closure-only
+--commas always
+--semicolons never
+--self init-only
+--importgrouping alphabetized
+--linebreaks lf

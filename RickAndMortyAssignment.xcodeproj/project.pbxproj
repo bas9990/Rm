@@ -99,6 +99,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3F52B05D2E73F88A00847F95 /* Build configuration list for PBXNativeTarget "RickAndMortyAssignment" */;
 			buildPhases = (
+				3F52B0752E74086900847F95 /* Swift Format */,
 				3F52B0332E73F88800847F95 /* Sources */,
 				3F52B0342E73F88800847F95 /* Frameworks */,
 				3F52B0352E73F88800847F95 /* Resources */,
@@ -195,6 +196,8 @@
 			);
 			mainGroup = 3F52B02E2E73F88800847F95;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3F52B0382E73F88800847F95 /* Products */;
 			projectDirPath = "";
@@ -230,6 +233,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3F52B0752E74086900847F95 /* Swift Format */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Swift Format";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# LINT-ONLY on build to avoid rewriting files.\nexport PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\"\n\nif which swiftformat >/dev/null 2>&1; then\n  swiftformat \"$SRCROOT\" --config \"$SRCROOT/.swiftformat\" --lint --quiet\nelse\n  echo \"warning: SwiftFormat not installed. Run: brew install swiftformat\"\nfi\n\nif which swiftlint >/dev/null 2>&1; then\n  swiftlint --quiet\nelse\n  echo \"warning: SwiftLint not installed. Run: brew install swiftlint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3F52B0332E73F88800847F95 /* Sources */ = {
@@ -398,6 +423,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RickAndMortyAssignment/Preview Content\"";
 				DEVELOPMENT_TEAM = WZFXZ9MCWM;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -427,6 +453,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"RickAndMortyAssignment/Preview Content\"";
 				DEVELOPMENT_TEAM = WZFXZ9MCWM;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
