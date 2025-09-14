@@ -10,6 +10,8 @@ import SwiftUI
 
 @main
 struct RickAndMortyAssignmentApp: App {
+    let episodesRepository = RemoteEpisodesRepository(apiClient: RMAPIClient())
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -25,7 +27,7 @@ struct RickAndMortyAssignmentApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            EpisodesListView(episodesRepository: episodesRepository)
         }
         .modelContainer(sharedModelContainer)
     }
