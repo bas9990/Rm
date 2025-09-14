@@ -10,25 +10,30 @@ import SwiftUI
 
 @main
 struct RickAndMortyAssignmentApp: App {
-    let episodesRepository = RemoteEpisodesRepository(apiClient: RMAPIClient())
+    let modelContainer: ModelContainer
 
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+    @StateObject private var dependencyContainer: AppContainer
 
+    init() {
+        let container: ModelContainer
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            container = try ModelContainerProvider.make()
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            #if DEBUG
+                fatalError("ModelContainer init failed: \(error)")
+            #endif
         }
-    }()
+        self.modelContainer = container
+
+        let dependencyContainer = AppContainer(modelContainer: container)
+        _dependencyContainer = StateObject(wrappedValue: dependencyContainer)
+    }
 
     var body: some Scene {
         WindowGroup {
-            EpisodesListView(episodesRepository: episodesRepository)
+            EpisodesListView(dependencyContainer: dependencyContainer)
+                .environmentObject(dependencyContainer)
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(modelContainer)
     }
 }

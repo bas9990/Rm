@@ -29,25 +29,6 @@
 		3F52B0532E73F88A00847F95 /* RickAndMortyAssignmentUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RickAndMortyAssignmentUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		3F52B17D2E762EB400847F95 /* Exceptions for "RickAndMortyAssignmentTests" folder in "RickAndMortyAssignment" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Mocks/MockAPIClient.swift,
-				RickAndMortyAssignmentTests.swift,
-			);
-			target = 3F52B0362E73F88800847F95 /* RickAndMortyAssignment */;
-		};
-		3F52B17E2E762EB400847F95 /* Exceptions for "RickAndMortyAssignmentTests" folder in "RickAndMortyAssignmentTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Mocks/MockAPIClient.swift,
-				RickAndMortyAssignmentTests.swift,
-			);
-			target = 3F52B0482E73F88A00847F95 /* RickAndMortyAssignmentTests */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3F52B0392E73F88800847F95 /* RickAndMortyAssignment */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -61,10 +42,6 @@
 		};
 		3F52B17A2E762EB400847F95 /* RickAndMortyAssignmentTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				3F52B17D2E762EB400847F95 /* Exceptions for "RickAndMortyAssignmentTests" folder in "RickAndMortyAssignment" target */,
-				3F52B17E2E762EB400847F95 /* Exceptions for "RickAndMortyAssignmentTests" folder in "RickAndMortyAssignmentTests" target */,
-			);
 			path = RickAndMortyAssignmentTests;
 			sourceTree = "<group>";
 		};
@@ -133,7 +110,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				3F52B0392E73F88800847F95 /* RickAndMortyAssignment */,
-				3F52B17A2E762EB400847F95 /* RickAndMortyAssignmentTests */,
 			);
 			name = RickAndMortyAssignment;
 			packageProductDependencies = (
@@ -154,6 +130,9 @@
 			);
 			dependencies = (
 				3F52B04B2E73F88A00847F95 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3F52B17A2E762EB400847F95 /* RickAndMortyAssignmentTests */,
 			);
 			name = RickAndMortyAssignmentTests;
 			packageProductDependencies = (

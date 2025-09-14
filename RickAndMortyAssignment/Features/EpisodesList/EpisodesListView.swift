@@ -5,21 +5,34 @@
 //  Created by Bas Hogeveen on 14/09/2025.
 //
 
+import SwiftData
 import SwiftUI
 
 struct EpisodesListView: View {
     @StateObject private var viewModel: EpisodesViewModel
 
-    init(episodesRepository: EpisodesRepository) {
-        self._viewModel = StateObject(wrappedValue: .init(repository: episodesRepository))
+    @Query(sort: [SortDescriptor(\EpisodeEntity.id)]) private var episodes: [EpisodeEntity]
+
+    @Query(filter: #Predicate<EpisodeFeedState> { $0.key == "episodes" })
+    private var feedStateRows: [EpisodeFeedState]
+
+    private var feedState: EpisodeFeedState? { feedStateRows.first }
+    private var reachedEnd: Bool { !episodes.isEmpty && (feedState?.nextURLString == nil) }
+
+    init(dependencyContainer: AppContainer) {
+        let service = EpisodesSynchronizationService(
+            api: dependencyContainer.apiClient,
+            contextContainer: dependencyContainer.modelContainer
+        )
+        _viewModel = StateObject(wrappedValue: EpisodesViewModel(service: service))
     }
 
     var body: some View {
         List {
-            ForEach(viewModel.episodes) { episode in
+            ForEach(episodes) { episode in
                 episodeRow(episode)
                     .onAppear {
-                        Task { await viewModel.loadNextIfNeeded(currentItem: episode) }
+                        Task { await viewModel.loadMoreIfNeeded() }
                     }
             }
 
@@ -29,16 +42,16 @@ struct EpisodesListView: View {
     }
 
     @ViewBuilder
-    private func episodeRow(_ episode: Episode) -> some View {
+    private func episodeRow(_ episode: EpisodeEntity) -> some View {
         Text(episode.name)
     }
 
     @ViewBuilder
     private var isAtEndView: some View {
-        if viewModel.isAtEnd {
+        if reachedEnd {
             HStack {
                 Spacer()
-                Text("You reached the end. \(viewModel.episodes.count)")
+                Text("You reached the end. \(episodes.count)")
                     .foregroundStyle(.secondary)
                 Spacer()
             }
@@ -49,5 +62,5 @@ struct EpisodesListView: View {
 }
 
 #Preview {
-    EpisodesListView(episodesRepository: RemoteEpisodesRepository(apiClient: RMAPIClient()))
+//    EpisodesListView(di: AppContainer())
 }
