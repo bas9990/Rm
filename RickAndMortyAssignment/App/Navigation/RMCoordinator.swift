@@ -49,10 +49,12 @@ final class RMCoordinator: ObservableObject {
             //            PlaceholderScreen(title: "Locations list (coming soon)")
 
         case let .episodeCharacters(episodeID):
-            EpisodeDetailsView(episodeID: episodeID, charactersSync: charactersService)
+            EpisodeDetailsView(episodeID: episodeID, charactersSync: charactersService) { [weak self] id in
+                self?.push(.characterDetail(id: id))
+            }
 
         case let .characterDetail(id):
-            PlaceholderScreen(title: "Character \(id) detail (coming soon)")
+            CharacterDetailsView(characterID: id)
             //
             //        case .locationDetail(let id):
             //            PlaceholderScreen(title: "Location \(id) detail (coming soon)")
