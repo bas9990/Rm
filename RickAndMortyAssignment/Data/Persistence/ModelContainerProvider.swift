@@ -9,7 +9,7 @@ import SwiftData
 
 enum ModelContainerProvider {
     static func make() throws -> ModelContainer {
-        let schema = Schema([EpisodeEntity.self, EpisodeFeedState.self])
+        let schema = Schema([EpisodeEntity.self, EpisodeFeedState.self, CharacterEntity.self])
         let config = ModelConfiguration("RickAndMortyAssignment")
         return try ModelContainer(for: schema, configurations: config)
     }

@@ -31,13 +31,21 @@ struct EpisodesListView: View {
             lastTimeRefreshed
 
             ForEach(episodes) { episode in
-                episodeRow(episode)
-                    .onAppear {
-                        Task { await viewModel.loadMoreIfNeeded() }
-                    }
+                Button(
+                    action: { onEpisodeSelected(episode.id) },
+                    label: { episodeRow(episode) }
+                )
             }
 
-            isAtEndView
+            footer
+        }
+        .toolbar {
+            // Users might not see the loading cell
+            ToolbarItem(placement: .topBarTrailing) {
+                if viewModel.isLoading {
+                    ProgressView()
+                }
+            }
         }
         .refreshable {
             Task { await viewModel.refreshFromStart() }
@@ -61,11 +69,38 @@ struct EpisodesListView: View {
 
     @ViewBuilder
     private func episodeRow(_ episode: EpisodeEntity) -> some View {
-        Text(episode.name)
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(episode.name)
+                    .font(.headline)
+                    .lineLimit(2)
+                    .foregroundStyle(.rmNavy)
+                HStack {
+                    Badge(
+                        text: episode.episodeCode,
+                        systemImage: "film",
+                        foreground: .white,
+                        background: .rmNavy.opacity(0.6)
+                    )
+                    Badge(
+                        text: episode.asDomain.formattedAirDate,
+                        systemImage: "calendar",
+                        foreground: .white,
+                        background: .rmOrange.opacity(0.6)
+                    )
+                }
+            }
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.footnote)
+                .foregroundStyle(.tertiary)
+        }
+        .padding(.vertical, 6)
+        .contentShape(Rectangle())
     }
 
     @ViewBuilder
-    private var isAtEndView: some View {
+    private var footer: some View {
         if reachedEnd {
             HStack {
                 Spacer()
@@ -73,8 +108,10 @@ struct EpisodesListView: View {
                     .foregroundStyle(.secondary)
                 Spacer()
             }
-        } else if viewModel.isLoading {
-            ProgressView("Loading...")
+        } else if !episodes.isEmpty {
+            LoadMoreTrigger(isLoading: viewModel.isLoading) {
+                await viewModel.loadMoreIfNeeded()
+            }
         }
     }
 }

@@ -11,9 +11,14 @@ import SwiftUI
 final class RMCoordinator: ObservableObject {
     @Published var path = NavigationPath()
     private let episodesService: EpisodesSynchronizationService
+    private let charactersService: CharactersSynchronizationService
 
-    init(episodesService: EpisodesSynchronizationService) {
+    init(
+        episodesService: EpisodesSynchronizationService,
+        charactersService: CharactersSynchronizationService
+    ) {
         self.episodesService = episodesService
+        self.charactersService = charactersService
     }
 
     func push(_ page: RMPage) { path.append(page) }
@@ -44,7 +49,7 @@ final class RMCoordinator: ObservableObject {
             //            PlaceholderScreen(title: "Locations list (coming soon)")
 
         case let .episodeCharacters(episodeID):
-            PlaceholderScreen(title: "episodeID \(episodeID) detail (coming soon)")
+            EpisodeDetailsView(episodeID: episodeID, charactersSync: charactersService)
 
         case let .characterDetail(id):
             PlaceholderScreen(title: "Character \(id) detail (coming soon)")

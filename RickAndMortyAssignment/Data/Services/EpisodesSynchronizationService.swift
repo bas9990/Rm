@@ -64,8 +64,8 @@ final class EpisodesSynchronizationService: EpisodesSynchronizationServiceProtoc
 
     private func fetchAndUpsertNextPage(cursor: Cursor) async throws {
         let dto: EpisodesPageDTO = try await apiClient.invoke(GetEpisodesPageOperation(cursor: cursor))
+
         let episodes = dto.results.map { $0.toDomain(using: dateParser) }
-        print("data is gehaald")
 
         try persist(episodes)
 

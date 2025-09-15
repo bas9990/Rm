@@ -15,7 +15,8 @@ struct DashboardCard: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .center, spacing: 12) {
+                Spacer()
                 Image(systemName: icon)
                     .font(.largeTitle.bold())
                     .accessibilityHidden(true)
@@ -24,7 +25,7 @@ struct DashboardCard: View {
                     .font(.headline)
                     .multilineTextAlignment(.leading)
 
-                Spacer(minLength: 0)
+                Spacer()
             }
             .frame(maxWidth: .infinity, minHeight: 120)
             .padding(16)

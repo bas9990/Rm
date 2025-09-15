@@ -10,5 +10,5 @@ enum RMPage: Hashable {
     case dashboard
     case episodesList
     case episodeCharacters(episodeID: Int)
-    case characterDetail(id: Int) // placeholder for next step
+    case characterDetail(id: Int)
 }
