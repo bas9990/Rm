@@ -13,7 +13,7 @@ struct EpisodesListView: View {
 
     @Query(sort: [SortDescriptor(\EpisodeEntity.id)]) private var episodes: [EpisodeEntity]
 
-    @Query(filter: #Predicate<EpisodeFeedState> { $0.key == "episodes" })
+    @Query(filter: #Predicate<EpisodeFeedState> { $0.key == "episodesFeedState" })
     private var feedStateRows: [EpisodeFeedState]
 
     private var feedState: EpisodeFeedState? { feedStateRows.first }
@@ -28,6 +28,8 @@ struct EpisodesListView: View {
 
     var body: some View {
         List {
+            lastTimeRefreshed
+
             ForEach(episodes) { episode in
                 episodeRow(episode)
                     .onAppear {
@@ -37,7 +39,24 @@ struct EpisodesListView: View {
 
             isAtEndView
         }
+        .refreshable {
+            Task { await viewModel.refreshFromStart() }
+        }
         .task { await viewModel.loadFirst() }
+    }
+
+    @ViewBuilder
+    private var lastTimeRefreshed: some View {
+        if let text = feedState?.lastRefreshed {
+            Section {
+                HStack(spacing: 8) {
+                    Image(systemName: "clock.arrow.circlepath")
+                    Text(text.formatted())
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+        }
     }
 
     @ViewBuilder

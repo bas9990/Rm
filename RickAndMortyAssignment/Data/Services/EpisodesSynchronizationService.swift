@@ -45,7 +45,6 @@ final class EpisodesSynchronizationService: EpisodesSynchronizationServiceProtoc
         state.nextURLString = nil
         state.lastRefreshed = nil
         try context.save()
-
         try await fetchAndUpsertNextPage(cursor: .page(1))
     }
 
@@ -64,14 +63,12 @@ final class EpisodesSynchronizationService: EpisodesSynchronizationServiceProtoc
     // MARK: - Internals
 
     private func fetchAndUpsertNextPage(cursor: Cursor) async throws {
-        // Network + decode (await → doesn't block main runloop)
         let dto: EpisodesPageDTO = try await apiClient.invoke(GetEpisodesPageOperation(cursor: cursor))
         let episodes = dto.results.map { $0.toDomain(using: dateParser) }
         print("data is gehaald")
-        // Upsert batch
+
         try persist(episodes)
 
-        // Advance cursor & timestamp
         let state = ensureState()
         state.nextURLString = cursor.nextURL(from: dto.info.next)?.absoluteString
         state.lastRefreshed = .now
