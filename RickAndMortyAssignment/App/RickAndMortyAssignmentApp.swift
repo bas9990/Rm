@@ -31,8 +31,7 @@ struct RickAndMortyAssignmentApp: App {
 
     var body: some Scene {
         WindowGroup {
-            EpisodesListView(dependencyContainer: dependencyContainer)
-                .environmentObject(dependencyContainer)
+            RMCoordinatorView(coordinator: dependencyContainer.coordinator)
         }
         .modelContainer(modelContainer)
     }

@@ -19,12 +19,11 @@ struct EpisodesListView: View {
     private var feedState: EpisodeFeedState? { feedStateRows.first }
     private var reachedEnd: Bool { !episodes.isEmpty && (feedState?.nextURLString == nil) }
 
-    init(dependencyContainer: AppContainer) {
-        let service = EpisodesSynchronizationService(
-            api: dependencyContainer.apiClient,
-            contextContainer: dependencyContainer.modelContainer
-        )
+    private let onEpisodeSelected: (Int) -> Void
+
+    init(service: EpisodesSynchronizationService, onEpisodeSelected: @escaping (Int) -> Void) {
         _viewModel = StateObject(wrappedValue: EpisodesViewModel(service: service))
+        self.onEpisodeSelected = onEpisodeSelected
     }
 
     var body: some View {

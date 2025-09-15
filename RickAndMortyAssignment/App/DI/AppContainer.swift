@@ -12,11 +12,13 @@ import SwiftUI
 final class AppContainer: ObservableObject {
     let modelContainer: ModelContainer
     let apiClient: APIClient
+    let coordinator: RMCoordinator
     let episodeSyncService: EpisodesSynchronizationServiceProtocol
 
     init(modelContainer: ModelContainer, apiClient: APIClient = RMAPIClient()) {
         self.modelContainer = modelContainer
         self.apiClient = apiClient
+        self.coordinator = .init(episodesService: .init(api: apiClient, contextContainer: modelContainer))
         self.episodeSyncService = EpisodesSynchronizationService(api: apiClient, contextContainer: modelContainer)
     }
 }
