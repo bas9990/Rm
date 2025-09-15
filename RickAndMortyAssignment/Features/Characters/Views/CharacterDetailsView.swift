@@ -14,6 +14,10 @@ struct CharacterDetailsView: View {
     @Query private var rows: [CharacterEntity]
     private var character: CharacterEntity? { rows.first }
 
+    @State private var exportedFileURL: URL?
+    @State private var isLoading: Bool = false
+    private let characterExporter = CharacterExporter()
+
     init(characterID: Int) {
         self.characterID = characterID
         _rows = Query(
@@ -50,7 +54,36 @@ struct CharacterDetailsView: View {
             }
             .padding(.vertical, 16)
         }
+        .toolbar {
+            if isLoading {
+                ProgressView()
+            } else {
+                if let character {
+                    Button(
+                        action: {
+                            Task {
+                                do {
+                                    isLoading = true
+                                    exportedFileURL = try await characterExporter.export(character)
+                                    isLoading = false
+                                } catch {
+                                    isLoading = false
+                                    print("Export failed:", error)
+                                }
+                            }
+                        },
+                        label: { Image(systemName: "square.and.arrow.up") }
+                    )
+                    .accessibilityLabel("Export character")
+                }
+            }
+        }
+        .sheet(item: $exportedFileURL) { url in
+            ShareSheetView(items: [url])
+        }
         .navigationTitle("Character")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+
+extension URL: Identifiable { public var id: String { absoluteString } }
