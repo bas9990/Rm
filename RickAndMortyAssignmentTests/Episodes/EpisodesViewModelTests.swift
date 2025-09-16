@@ -17,7 +17,7 @@ final class EpisodesViewModelTests: XCTestCase {
         let mock = MockAPIClient()
         mock.onInvoke { _ in throw TestError.forced }
 
-        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container)
+        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container, appEnviorment: .mock)
         let viewmodel = EpisodesViewModel(service: service)
 
         await viewmodel.refreshFromStart()
@@ -36,7 +36,7 @@ final class EpisodesViewModelTests: XCTestCase {
             default: throw TestError.forced
             }
         }
-        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container)
+        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container, appEnviorment: .mock)
         let viewModel = EpisodesViewModel(service: service)
 
         await viewModel.loadFirst()

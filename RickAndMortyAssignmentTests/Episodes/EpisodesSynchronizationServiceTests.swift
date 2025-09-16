@@ -21,7 +21,7 @@ final class EpisodesSynchronizationServiceTests: XCTestCase {
             default: throw TestError.forced
             }
         }
-        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container)
+        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container, appEnviorment: .mock)
 
         await service.loadInitialContent()
 
@@ -45,7 +45,7 @@ final class EpisodesSynchronizationServiceTests: XCTestCase {
         // If invoked, we blow up (should not be called)
         mock.onInvoke { _ in throw TestError.forced }
 
-        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container)
+        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container, appEnviorment: .mock)
         await service.loadInitialContent()
 
         let rows = try fetchAllEpisodes(ctx)
@@ -74,7 +74,7 @@ final class EpisodesSynchronizationServiceTests: XCTestCase {
             }
         }
 
-        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container)
+        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container, appEnviorment: .mock)
         try await service.loadNextPage()
 
         let rows = try fetchAllEpisodes(ctx)
@@ -102,7 +102,7 @@ final class EpisodesSynchronizationServiceTests: XCTestCase {
             }
         }
 
-        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container)
+        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container, appEnviorment: .mock)
         try await service.reloadFromStart()
 
         let rows = try fetchAllEpisodes(ctx)
@@ -126,7 +126,7 @@ final class EpisodesSynchronizationServiceTests: XCTestCase {
         // If invoked, fail (should not be called)
         mock.onInvoke { _ in throw TestError.forced }
 
-        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container)
+        let service = await EpisodesSynchronizationService(api: mock, contextContainer: container, appEnviorment: .mock)
         try await service.loadNextPage() // should no-op, no throw
 
         let rows = try fetchAllEpisodes(ctx)

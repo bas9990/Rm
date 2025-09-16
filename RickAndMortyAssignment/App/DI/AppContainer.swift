@@ -11,21 +11,28 @@ import SwiftUI
 @MainActor
 final class AppContainer: ObservableObject {
     let modelContainer: ModelContainer
+    let environment: AppEnvironment
     let apiClient: APIClient
     let coordinator: RMCoordinator
     let episodeSyncService: EpisodesSynchronizationService
     let charactersSync: CharactersSynchronizationService
 
-    init(modelContainer: ModelContainer, apiClient: APIClient = RMAPIClient()) {
+    init(
+        modelContainer: ModelContainer,
+        apiClient: APIClient = RMAPIClient(),
+        environment: AppEnvironment = .production
+    ) {
         self.modelContainer = modelContainer
+        self.environment = environment
         self.apiClient = apiClient
-        self.episodeSyncService = EpisodesSynchronizationService(api: apiClient, contextContainer: modelContainer)
+        self.episodeSyncService = EpisodesSynchronizationService(
+            api: apiClient,
+            contextContainer: modelContainer,
+            appEnviorment: environment
+        )
         self.charactersSync = CharactersSynchronizationService(apiClient: apiClient, contextContainer: modelContainer)
         self.coordinator = .init(
-            episodesService: .init(
-                api: apiClient,
-                contextContainer: modelContainer
-            ),
+            episodesService: episodeSyncService,
             charactersService: charactersSync
         )
     }

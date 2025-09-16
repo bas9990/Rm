@@ -19,12 +19,14 @@ final class EpisodesSynchronizationService: EpisodesSynchronizationServiceProtoc
     private let apiClient: APIClient
     private let dateParser = AirDateParser()
     private let context: ModelContext
+    private let appEnviorment: AppEnvironment
 
     private var isSyncing = false
 
-    init(api: APIClient, contextContainer: ModelContainer) {
+    init(api: APIClient, contextContainer: ModelContainer, appEnviorment: AppEnvironment) {
         self.apiClient = api
         self.context = ModelContext(contextContainer)
+        self.appEnviorment = appEnviorment
     }
 
     // first load
@@ -44,6 +46,8 @@ final class EpisodesSynchronizationService: EpisodesSynchronizationServiceProtoc
         let state = ensureState()
         state.nextURLString = nil
         state.lastRefreshed = nil
+        state.refreshPointerURLString = nil
+
         try context.save()
         try await fetchAndUpsertNextPage(cursor: .page(1))
     }
@@ -60,11 +64,50 @@ final class EpisodesSynchronizationService: EpisodesSynchronizationServiceProtoc
         try await fetchAndUpsertNextPage(cursor: cursor)
     }
 
+    func refreshLoadedPagesBackward() async {
+        guard !isSyncing else { return }
+        isSyncing = true
+        defer { isSyncing = false }
+
+        let state = ensureState()
+
+        var currentURL: URL? = state.refreshPointerURLString.flatMap(URL.init(string:))
+
+        guard currentURL != nil else { return }
+
+        while let url = currentURL {
+            do {
+                // Fetch this page and persist its episodes.
+                let dto: EpisodesPageDTO = try await apiClient.invoke(GetEpisodesPageOperation(cursor: .url(url)))
+                let episodes = dto.results.map { $0.toDomain(using: dateParser) }
+                try persist(episodes)
+
+                state.lastRefreshed = .now
+
+                // Follow `prev`; if none, we're done.
+                if let prevString = dto.info.prev, let prevURL = URL(string: prevString) {
+                    state.refreshPointerURLString = prevURL.absoluteString
+                    try context.save()
+                    currentURL = prevURL
+                } else {
+                    // Reached the beginning; clear the pointer.
+                    state.refreshPointerURLString = nil
+                    try context.save()
+                    break
+                }
+            } catch {
+                // Best-effort: stop on error to avoid loops / time overruns.
+                // (Keep whatever we’ve persisted so far.)
+                break
+            }
+        }
+    }
+
     // MARK: - Internals
 
     private func fetchAndUpsertNextPage(cursor: Cursor) async throws {
-        let dto: EpisodesPageDTO = try await apiClient.invoke(GetEpisodesPageOperation(cursor: cursor))
-
+        let operation = GetEpisodesPageOperation(cursor: cursor)
+        let dto: EpisodesPageDTO = try await apiClient.invoke(operation)
         let episodes = dto.results.map { $0.toDomain(using: dateParser) }
 
         try persist(episodes)
@@ -73,7 +116,22 @@ final class EpisodesSynchronizationService: EpisodesSynchronizationServiceProtoc
         state.nextURLString = cursor.nextURL(from: dto.info.next)?.absoluteString
         state.lastRefreshed = .now
 
+        if let refreshPointerURLString = cursor.absoluteURL?.absoluteString {
+            state.refreshPointerURLString = refreshPointerURLString
+        } else if case let .page(page) = cursor {
+            state.refreshPointerURLString = episodePageURL(page).absoluteString
+        }
+
         try context.save()
+    }
+
+    private func episodePageURL(_ page: Int) -> URL {
+        var comps = URLComponents(
+            url: appEnviorment.apiBaseURL.appendingPathComponent("episode"),
+            resolvingAgainstBaseURL: false
+        )!
+        comps.queryItems = [URLQueryItem(name: "page", value: String(page))]
+        return comps.url!
     }
 
     // MARK: - Persistence helpers

@@ -8,7 +8,7 @@
 import Foundation
 
 struct RickAndMortyAPIClientConfig {
-    let baseURL = URL(string: "https://rickandmortyapi.com/api")!
+    let baseURL: URL
     let timeout: TimeInterval = 20
     let retries: Int = 2
     let backoff: (Int) -> TimeInterval = { attempt in pow(2.0, Double(attempt)) * 0.4 }
@@ -18,6 +18,10 @@ struct RickAndMortyAPIClientConfig {
         config.timeoutIntervalForRequest = timeout
         config.timeoutIntervalForResource = max(60, timeout)
         return config
+    }
+
+    init(baseURL: URL = AppEnvironment.production.apiBaseURL) {
+        self.baseURL = baseURL
     }
 }
 
