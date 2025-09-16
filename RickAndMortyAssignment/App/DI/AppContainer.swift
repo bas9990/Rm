@@ -13,6 +13,7 @@ final class AppContainer: ObservableObject {
     let modelContainer: ModelContainer
     let environment: AppEnvironment
     let apiClient: APIClient
+    let locationRepository: LocationsRepository
     let coordinator: RMCoordinator
     let episodeSyncService: EpisodesSynchronizationService
     let charactersSync: CharactersSynchronizationService
@@ -30,10 +31,12 @@ final class AppContainer: ObservableObject {
             contextContainer: modelContainer,
             appEnviorment: environment
         )
+        self.locationRepository = RemoteLocationsRepository(apiClient: apiClient)
         self.charactersSync = CharactersSynchronizationService(apiClient: apiClient, contextContainer: modelContainer)
         self.coordinator = .init(
             episodesService: episodeSyncService,
-            charactersService: charactersSync
+            charactersService: charactersSync,
+            locationRepository: locationRepository
         )
     }
 }

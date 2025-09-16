@@ -12,13 +12,16 @@ final class RMCoordinator: ObservableObject {
     @Published var path = NavigationPath()
     private let episodesService: EpisodesSynchronizationService
     private let charactersService: CharactersSynchronizationService
+    private let locationRepository: LocationsRepository
 
     init(
         episodesService: EpisodesSynchronizationService,
-        charactersService: CharactersSynchronizationService
+        charactersService: CharactersSynchronizationService,
+        locationRepository: LocationsRepository
     ) {
         self.episodesService = episodesService
         self.charactersService = charactersService
+        self.locationRepository = locationRepository
     }
 
     func push(_ page: RMPage) { path.append(page) }
@@ -34,8 +37,8 @@ final class RMCoordinator: ObservableObject {
         case .dashboard:
             DashboardView(
                 onTapEpisodes: { [weak self] in self?.push(.episodesList) },
-                onTapCharacters: { [weak self] in print("TODO") },
-                onTapLocations: { [weak self] in print("TODO") }
+                onTapCharacters: { [weak self] in self?.push(.charactersList) },
+                onTapLocations: { [weak self] in self?.push(.locationsList) }
             )
 
         case .episodesList:
@@ -43,10 +46,11 @@ final class RMCoordinator: ObservableObject {
                 self?.push(.episodeCharacters(episodeID: id))
             }
 
-            //        case .charactersList:
-            //            PlaceholderScreen(title: "Characters list (coming soon)")
-            //        case .locationsList:
-            //            PlaceholderScreen(title: "Locations list (coming soon)")
+        case .charactersList:
+            PlaceholderScreen(title: "Characters list (coming soon)")
+
+        case .locationsList:
+            LocationsListView(repository: locationRepository)
 
         case let .episodeCharacters(episodeID):
             EpisodeDetailsView(episodeID: episodeID, charactersSync: charactersService) { [weak self] id in
@@ -55,10 +59,6 @@ final class RMCoordinator: ObservableObject {
 
         case let .characterDetail(id):
             CharacterDetailsView(characterID: id)
-            //
-            //        case .locationDetail(let id):
-            //            PlaceholderScreen(title: "Location \(id) detail (coming soon)")
-            //        }
         }
     }
 }

@@ -9,6 +9,8 @@ import Foundation
 enum RMPage: Hashable {
     case dashboard
     case episodesList
+    case charactersList
+    case locationsList
     case episodeCharacters(episodeID: Int)
     case characterDetail(id: Int)
 }
